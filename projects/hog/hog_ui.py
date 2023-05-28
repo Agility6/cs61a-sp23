@@ -8,16 +8,17 @@ from hog import *
 # Printing game events #
 ########################
 
-
+# 用于打印的函数
 def play_and_print(strategy0, strategy1):
     """Simulate a game and print out what happened during the simulation."""
+    # 相比于Problem5，这里使用和Hight-order-function将默认函数传入，为了进行print文本
     final0, final1 = play(printing_strategy(0, strategy0),
                           printing_strategy(1, strategy1),
                           square_update_and_print, 0, 0,
                           printing_dice(six_sided))
     print('The final score is Player 0:', final0, 'vs Player 1:', final1)
 
-
+# 打印每次strtegy的结果
 def printing_strategy(who, strategy):
     """Return a strategy that also prints the player's score and choice.
 
@@ -34,19 +35,22 @@ def printing_strategy(who, strategy):
     """
     assert who == 0 or who == 1, 'the player must be 0 or 1'
 
+    # 接收当前玩家和另一位玩家的score
     def choose_and_print(score, opponent_score):
         "A strategy function that also prints."
+        # score0意味着是当前玩家的score，反之亦然
         if who == 0:
             score0, score1 = score, opponent_score
         else:
             score0, score1 = opponent_score, score
+        # 获取点数
         num_rolls = strategy(score, opponent_score)
         print('The score is', score0, 'to', score1, 'and Player', who,
               'rolls', num_rolls, 'dice...')
         return num_rolls
     return choose_and_print
 
-
+# 打印模拟摇骰结果
 def printing_dice(dice):
     """Return a dice function that also prints the outcome and a space."""
     def dice_and_print():
@@ -56,7 +60,7 @@ def printing_dice(dice):
         return outcome
     return dice_and_print
 
-
+# 游戏的rule
 def square_update_and_print(num_rolls, player_score, opponent_score, dice):
     """Return the updated score, print out the score update, and print when
     Square Swine is triggered.

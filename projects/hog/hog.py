@@ -178,6 +178,7 @@ def always_roll(n):
     assert n >= 0 and n <= 10
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    return lambda x, y: n 
     # END PROBLEM 6
 
 
@@ -195,7 +196,6 @@ def catch_up(score, opponent_score):
     else:
         return 5
 
-
 def is_always_roll(strategy, goal=GOAL):
     """Return whether strategy always chooses the same number of dice to roll.
 
@@ -208,6 +208,13 @@ def is_always_roll(strategy, goal=GOAL):
     """
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    first_dice = strategy(0, 0)
+    for score in range(goal):
+        for op_score in range(goal):
+           current_dice = strategy(score, op_score)
+           if first_dice != current_dice:
+               return False
+    return True
     # END PROBLEM 7
 
 
@@ -216,6 +223,11 @@ def make_averaged(original_function, total_samples=1000):
     called TOTAL_SAMPLES times.
 
     To implement this function, you will have to use *args syntax.
+    
+    1. 将roll_dice函数传入original_function中 total_samples = 40
+    2. make_averaged返回的函数，此函数接收的参数与OG一致
+    3. OG(1, (4, 2, 5, 1))
+    4. 按照total_samples重复
 
     >>> dice = make_test_dice(4, 2, 5, 1)
     >>> averaged_dice = make_averaged(roll_dice, 40)
@@ -224,6 +236,12 @@ def make_averaged(original_function, total_samples=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def avg(*args):
+        total = 0
+        for i in range(total_samples):
+            total = total + original_function(*args)
+        return total / total_samples
+    return avg
     # END PROBLEM 8
 
 
@@ -231,13 +249,22 @@ def max_scoring_num_rolls(dice=six_sided, total_samples=1000):
     """Return the number of dice (1 to 10) that gives the highest average turn score
     by calling roll_dice with the provided DICE a total of TOTAL_SAMPLES times.
     Assume that the dice always return positive outcomes.
-
+    
     >>> dice = make_test_dice(1, 6)
     >>> max_scoring_num_rolls(dice)
     1
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    roll_num, get_avg = 1, make_averaged(roll_dice, total_samples)
+    max_roll, max_avg = 1, get_avg(roll_num, dice)
+    while roll_num < 10:
+        roll_num = roll_num + 1
+        current_avg = get_avg(roll_num, dice)
+        if current_avg > max_avg:
+            max_avg = current_avg
+            max_roll = roll_num
+    return max_roll
     # END PROBLEM 9
 
 
@@ -281,6 +308,8 @@ def tail_strategy(score, opponent_score, threshold=12, num_rolls=6):
     points, and returns NUM_ROLLS otherwise. Ignore score and Square Swine.
     """
     # BEGIN PROBLEM 10
+    if tail_points(opponent_score) >= threshold:
+        return 0
     return num_rolls  # Remove this line once implemented.
     # END PROBLEM 10
 
@@ -288,7 +317,14 @@ def tail_strategy(score, opponent_score, threshold=12, num_rolls=6):
 def square_strategy(score, opponent_score, threshold=12, num_rolls=6):
     """This strategy returns 0 dice when your score would increase by at least threshold."""
     # BEGIN PROBLEM 11
-    return num_rolls  # Remove this line once implemented.
+    i = tail_points(opponent_score)
+    if i >= threshold:
+        return 0
+    else:
+        if perfect_square(score + i):
+            return 0
+        else:
+            return num_rolls  # Remove this line once implemented.
     # END PROBLEM 11
 
 
@@ -298,6 +334,7 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
+
     return 6  # Remove this line once implemented.
     # END PROBLEM 12
 
